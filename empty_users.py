@@ -1,4 +1,4 @@
-""" Use this to empty the tables. """
+""" Use this to empty the users table. """
 
 from pyodbc import connect
 
@@ -12,8 +12,6 @@ conn = connect(connection_string)
 cursor = conn.cursor()
 
 cursor.execute("DELETE FROM users")
-cursor.commit()
-cursor.execute("DELETE FROM roles")
 cursor.commit()
 
 conn.close()
