@@ -67,6 +67,47 @@ def load_db_table_users():
         offset = offset + 1
     conn.close()
 
+def must_be_digit(character):
+    char_as_int = ord(character)
+    if char_as_int >= 48 and char_as_int <= 57:
+        return True
+    return False
+
+def must_be_dash(character):
+    char_as_int = ord(character)
+    if char_as_int == 45:
+        return True
+    return False
+
+def validate(firstname, lastname, birthdate):
+    if firstname == "":
+        messagebox.showerror(title = "Error", message = "First name may not be blank.")
+        return False
+    if lastname == "":
+        messagebox.showerror(title = "Error", message = "Last name may not be blank.")
+        return False
+    if birthdate == "":
+        messagebox.showerror(title = "Error", message = "Birthdate may not be blank.")
+        return False
+    valid_dob = False
+    if len(birthdate) == 10:
+        c0 = must_be_digit(birthdate[0])
+        c1 = must_be_digit(birthdate[1])
+        c2 = must_be_digit(birthdate[2])
+        c3 = must_be_digit(birthdate[3])
+        c4 = must_be_dash(birthdate[4])
+        c5 = must_be_digit(birthdate[5])
+        c6 = must_be_digit(birthdate[6])
+        c7 = must_be_dash(birthdate[7])
+        c8 = must_be_digit(birthdate[8])
+        c9 = must_be_digit(birthdate[9])
+        if c0 and c1 and c2 and c3 and c4 and c5 and c6 and c7 and c8 and c9:
+            valid_dob = True
+    if valid_dob == False:
+        messagebox.showerror(title = "Error", message = "Invalid birthdate. Please use the format YYYY-MM-DD, eg. 2000-01-01.")
+        return False
+    return True
+
 def open_add_or_edit_user_window(which_one):
     index_of_selected_row_of_employees = 0
     roleid_of_selected_user = 0
@@ -86,37 +127,39 @@ def open_add_or_edit_user_window(which_one):
     add_or_edit_user_window.geometry("450x225-655+290")
 
     def okButton(*args):
-        personInfo = infoBox.get("1.0", END)
-        personInfo = personInfo[:-1]
-        connection_string = (
-        'DRIVER=SQLite3;'
-        'DATABASE=joonasdb.db;'
-        )
-        conn = connect(connection_string)
-        cursor = conn.cursor()
-        if which_one == 0:
-            df_users = pd.DataFrame(col_users_id)
-            new_id = df_users.max()[0] + 1
-            cursor.execute("INSERT INTO users VALUES(" \
-            + str(new_id) + ", " \
-            "'" + firstnameBox.get() + "', " \
-            "'" + lastnameBox.get() + "', " \
-            "'" + birthdateBox.get() + "', " \
-            + str(col_roles_roleid[roleBox.current()]) + ", " \
-            "'" + personInfo + "')")
-        else:
-            cursor.execute("UPDATE users SET " \
-            "firstname = '" + firstnameBox.get() + "', " \
-            "lastname = '" + lastnameBox.get() + "', " \
-            "birthdate = '" + birthdateBox.get() + "', " \
-            "role = " + str(col_roles_roleid[roleBox.current()]) + ", " \
-            "info = '" + personInfo + "'" \
-            " WHERE id = " + str(col_users_id[index_of_selected_row_of_employees]))
-        cursor.commit()
-        conn.close()
-        list_of_employees.delete(0, (list_of_employees.size() - 1))
-        load_db_table_users()
-        add_or_edit_user_window.destroy()
+        valid = validate(firstnameBox.get(), lastnameBox.get(), birthdateBox.get())
+        if valid:
+            personInfo = infoBox.get("1.0", END)
+            personInfo = personInfo[:-1]
+            connection_string = (
+            'DRIVER=SQLite3;'
+            'DATABASE=joonasdb.db;'
+            )
+            conn = connect(connection_string)
+            cursor = conn.cursor()
+            if which_one == 0:
+                df_users = pd.DataFrame(col_users_id)
+                new_id = df_users.max()[0] + 1
+                cursor.execute("INSERT INTO users VALUES(" \
+                + str(new_id) + ", " \
+                "'" + firstnameBox.get() + "', " \
+                "'" + lastnameBox.get() + "', " \
+                "'" + birthdateBox.get() + "', " \
+                + str(col_roles_roleid[roleBox.current()]) + ", " \
+                "'" + personInfo + "')")
+            else:
+                cursor.execute("UPDATE users SET " \
+                "firstname = '" + firstnameBox.get() + "', " \
+                "lastname = '" + lastnameBox.get() + "', " \
+                "birthdate = '" + birthdateBox.get() + "', " \
+                "role = " + str(col_roles_roleid[roleBox.current()]) + ", " \
+                "info = '" + personInfo + "'" \
+                " WHERE id = " + str(col_users_id[index_of_selected_row_of_employees]))
+            cursor.commit()
+            conn.close()
+            list_of_employees.delete(0, (list_of_employees.size() - 1))
+            load_db_table_users()
+            add_or_edit_user_window.destroy()
 
     if which_one == 0:
         add_or_edit_user_window.title("Add New Entry")
