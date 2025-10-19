@@ -12,11 +12,11 @@ conn = connect(connection_string)
 cursor = conn.cursor()
 
 cursor.execute("INSERT INTO roles VALUES" \
-"(0, 'CTO')," \
-"(1, 'CEO')," \
-"(2, 'Software Developer')," \
-"(3, 'Marketing')," \
-"(4, 'HR')" \
+"(1, 'CTO')," \
+"(2, 'CEO')," \
+"(3, 'Software Developer')," \
+"(4, 'Marketing')," \
+"(5, 'HR')" \
 )
 cursor.commit()
 
