@@ -106,6 +106,22 @@ def validate(firstname, lastname, birthdate):
     if valid_dob == False:
         messagebox.showerror(title = "Error", message = "Invalid birthdate. Please use the format YYYY-MM-DD, eg. 2000-01-01.")
         return False
+    else:
+        month = (int(birthdate[5]) * 10) + int(birthdate[6])
+        if month < 1 or month > 12:
+            messagebox.showerror(title = "Error", message = "Invalid month.")
+            return False
+        else:
+            day = (int(birthdate[8]) * 10) + int(birthdate[9])
+            if day < 1 or day > 31:
+                messagebox.showerror(title = "Error", message = "Invalid day.")
+                return False
+            if (month == 4 or month == 6 or month == 9 or month == 11) and day > 30:
+                messagebox.showerror(title = "Error", message = "Invalid day for the given month.")
+                return False
+            if month == 2 and day > 29:
+                messagebox.showerror(title = "Error", message = "Invalid day for February.")
+                return False
     return True
 
 def open_add_or_edit_user_window(which_one):
